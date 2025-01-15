@@ -1,12 +1,7 @@
 # Passive Aggressive Algorithms
-> Implementing Algorithms from Crammer et al. "Online Passive-Aggressive Algorithms"[^1]
+> Implementing Algorithms from Crammer et al. "Online Passive-Aggressive Algorithms"[^crammer]
 
 This Package builds upon [OnlineStatsBase.jl](https://github.com/joshday/OnlineStatsBase.jl/)
-
-
-## Sources
-[^1]: K. Crammer, O. Dekel, J. Keshet, S. Shalev-Shwartz, and Y. Singer, “Online Passive-Aggressive Algorithms,” Journal of Machine Learning Research, vol. 7, no. 19, pp. 551–585, 2006.
-
 # TODO
 - [ ] add testing
 - [ ] add all variants
@@ -24,3 +19,5 @@ This Package builds upon [OnlineStatsBase.jl](https://github.com/joshday/OnlineS
     - [ ] ML Update
   - [ ] Prototype PAC
 
+
+[^crammer]: K. Crammer, O. Dekel, J. Keshet, S. Shalev-Shwartz, and Y. Singer, “Online Passive-Aggressive Algorithms,” Journal of Machine Learning Research, vol. 7, no. 19, pp. 551–585, 2006.
