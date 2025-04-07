@@ -116,7 +116,6 @@ OnlineStatsBase._fit!(o::PAUniclassClassifier, y::AbstractVector{<:Number}) = be
     if o.adaptive
         # update our bound ϵ
         o.ϵ = sqrt(o.B^2 - w[end]^2)
-        @info "UP" wv = w[end] eps = o.ϵ
         o.weight = w[1:end-1]
     else
         o.weight = w
