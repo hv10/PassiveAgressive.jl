@@ -26,7 +26,7 @@ end
 
 @testitem "PAC V1 does fit." setup = [Imports] begin
     rng = Random.MersenneTwister(32)
-    X = randn(rng, 100, 10)
+    X = randn(rng, 1000, 10)
     w_true = rand(rng, 10)
     y = sign.(dot.([w_true], eachrow(X)))
     o = PassiveAgressive.PAClassifier(10; type=:v1)
@@ -88,9 +88,9 @@ end
 
 @testitem "PAUniclass (adaptive) does fit." setup = [Imports] begin
     rng = Random.MersenneTwister(32)
-    X = randn(rng, 100, 10)
-    X_out = randn(rng, 5, 10) .+ 4 # shift in all dim by 4
-    o = PassiveAgressive.PAUniclassClassifier(10; type=:v2, ϵ=0.0, C=2, B=4, adaptive=true)
+    X = randn(rng, Float64, 100, 10)
+    X_out = randn(rng, Float64, 100, 10) .+ 10 # shift in all dim by 4
+    o = PassiveAgressive.PAUniclassClassifier(10; type=:v1, ϵ=0.0, C=1, B=1e10, adaptive=true)
     fit!(o, eachrow(X))
     preds_in = PassiveAgressive.predict.(o, eachrow(X))
     preds_out = PassiveAgressive.predict.(o, eachrow(X_out))

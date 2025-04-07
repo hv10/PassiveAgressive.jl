@@ -31,7 +31,7 @@ PAClassifier(in_::Int=1; type::Symbol=:base, C=1) = begin
     return PAClassifier(rand(in_), rule, 0)
 end
 predict(o::PAClassifier, y::AbstractArray) = sign(dot(o.weight, y))
-OnlineStatsBase._fit!(o, y::Vector{Number}) = predict(o, y)
+OnlineStatsBase._fit!(o::PAClassifier, y::Vector{Number}) = predict(o, y)
 OnlineStatsBase._fit!(o::PAClassifier, y::Tuple) = begin
     if !(y[2] isa Nothing)
         yh = predict(o, y[1])
@@ -55,7 +55,7 @@ PARegressor(in_::Int=1; type::Symbol=:base, ϵ=0.1, C=1) = begin
     return PARegressor(rand(in_), rule, ϵ, 0)
 end
 predict(o::PARegressor, y::AbstractArray) = dot(o.weight, y)
-OnlineStatsBase._fit!(o, y::Vector{Number}) = predict(o, y)
+OnlineStatsBase._fit!(o::PARegressor, y::Vector{Number}) = predict(o, y)
 OnlineStatsBase._fit!(o::PARegressor, y::Tuple) = begin
     if !(y[2] isa Nothing)
         yh = predict(o, y[1])
