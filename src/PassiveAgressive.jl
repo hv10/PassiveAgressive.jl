@@ -95,31 +95,33 @@ PAUniclassClassifier(in_::Int=1; type::Symbol=:base, ϵ=0.1, B=1e10, C=1, adapti
     rule = update_rule_uniclass(type, C)
     if adaptive
         ϵ = 0.0 # init ϵ to be zero
+        weight = randn(in_ + 1)
+        weight[end] = B
+    else
+        weight = randn(in_)
     end
-    return PAUniclassClassifier(rand(in_), rule, ϵ, adaptive, B, 0)
+    return PAUniclassClassifier(weight, rule, ϵ, adaptive, B, 0)
 end
-predict(o::PAUniclassClassifier, y::AbstractVector{<:Number}) = dot(o.weight, y)
+predict(o::PAUniclassClassifier, y::AbstractVector{<:Number}) = o.adaptive ? dot(o.weight[1:end-1], y) : dot(o.weight, y)
 OnlineStatsBase._fit!(o::PAUniclassClassifier, y::AbstractVector{<:Number}) = begin
     w = o.weight
     if o.adaptive
-        w = vcat(w, sqrt(o.B^2 - o.ϵ^2))
         y = vcat(y, 0)
     end
-    cond_term = norm(y - w)
+    cond_term = norm(w - y, 2)
     if o.adaptive
         lt = ifelse(cond_term^2 <= o.B^2, 0, cond_term - o.ϵ)
     else
         lt = ifelse(cond_term <= o.ϵ, 0, cond_term - o.ϵ)
     end
     τ = o.rule(lt, y)
-    w = w + τ * ((y - w) / norm(y - w))
+    w = w + τ * ((y - w) / norm(y - w, 2))
     if o.adaptive
         # update our bound ϵ
         o.ϵ = sqrt(o.B^2 - w[end]^2)
-        o.weight = w[1:end-1]
-    else
-        o.weight = w
+        o.weight[end] = o.ϵ
     end
+    o.weight = w
     o.n += 1
 end
 
