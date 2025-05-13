@@ -7,6 +7,7 @@ using PassiveAgressive
     using LinearAlgebra
     using OnlineStats
     using Random
+    using Distributions
 end
 
 @testitem "PAC does fit." setup = [Imports] begin
@@ -89,10 +90,29 @@ end
 @testitem "PAUniclass (adaptive) does fit." setup = [Imports] begin
     rng = Random.MersenneTwister(32)
     X = randn(rng, Float64, 100, 10)
-    X_out = randn(rng, Float64, 100, 10) .+ 10 # shift in all dim by 4
-    o = PassiveAgressive.PAUniclassClassifier(10; type=:v1, ϵ=0.0, C=1, B=1e10, adaptive=true)
+    X_out = randn(rng, Float64, 100, 10) .+ 5 # shift in all dim by 5
+    o = PassiveAgressive.PAUniclassClassifier(10; type=:base, ϵ=0.0, C=1.0, B=10, adaptive=true)
     fit!(o, eachrow(X))
     preds_in = PassiveAgressive.predict.(o, eachrow(X))
+    preds_out = PassiveAgressive.predict.(o, eachrow(X_out))
+    @info "Pred.Inside:" sum(preds_in .<= o.ϵ)
+    @info "Pred.Outside:" sum(preds_out .> o.ϵ)
+end
+
+@testitem "PAUniclass (adaptive) does fit. [random w]" setup = [Imports] begin
+    rng = Random.MersenneTwister(32)
+    ndim = 5
+    A = randn(rng, ndim, ndim)
+    A = A'A
+    dA = MvNormal(randn(rng, ndim), A)
+    dB = MvNormal(randn(rng, ndim) .+ 1000, A)
+    X_in = rand(rng, dA, 20)'
+    X_out = rand(rng, dB, 20)'
+    o = PassiveAgressive.PAUniclassClassifier(ndim; type=:v2, ϵ=0.0, C=1.0, B=100, adaptive=true)
+
+    fit!(o, eachrow(X_in))
+    @info o.ϵ
+    preds_in = PassiveAgressive.predict.(o, eachrow(X_in))
     preds_out = PassiveAgressive.predict.(o, eachrow(X_out))
     @info "Pred.Inside:" sum(preds_in .<= o.ϵ)
     @info "Pred.Outside:" sum(preds_out .> o.ϵ)
