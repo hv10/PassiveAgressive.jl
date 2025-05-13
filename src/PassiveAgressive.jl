@@ -28,7 +28,7 @@ mutable struct PAClassifier <: OnlineStat{Union{Tuple,Vector{Number}}}
 end
 PAClassifier(in_::Int=1; type::Symbol=:base, C=1) = begin
     rule = update_rule(type, C)
-    return PAClassifier(rand(in_), rule, 0)
+    return PAClassifier(zeros(in_), rule, 0)
 end
 predict(o::PAClassifier, y::AbstractArray) = sign(dot(o.weight, y))
 OnlineStatsBase._fit!(o::PAClassifier, y::Vector{Number}) = predict(o, y)
@@ -52,7 +52,7 @@ mutable struct PARegressor <: OnlineStat{Union{Tuple,Vector{Number}}}
 end
 PARegressor(in_::Int=1; type::Symbol=:base, ϵ=0.1, C=1) = begin
     rule = update_rule(type, C)
-    return PARegressor(rand(in_), rule, ϵ, 0)
+    return PARegressor(zeros(in_), rule, ϵ, 0)
 end
 predict(o::PARegressor, y::AbstractArray) = dot(o.weight, y)
 OnlineStatsBase._fit!(o::PARegressor, y::Vector{Number}) = predict(o, y)
@@ -95,10 +95,10 @@ PAUniclassClassifier(in_::Int=1; type::Symbol=:base, ϵ=0.1, B=1e10, C=1, adapti
     rule = update_rule_uniclass(type, C)
     if adaptive
         ϵ = 0.0 # init ϵ to be zero
-        weight = randn(in_ + 1)
+        weight = zeros(in_ + 1)
         weight[end] = B
     else
-        weight = randn(in_)
+        weight = zeros(in_)
     end
     return PAUniclassClassifier(weight, rule, ϵ, adaptive, B, 0)
 end
