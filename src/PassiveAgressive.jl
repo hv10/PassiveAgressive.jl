@@ -21,9 +21,9 @@ update_rule(tp::Symbol, C::Number) = begin
     throw(ArgumentError("Unsupported PAC Type"))
 end
 
-mutable struct PAClassifier <: OnlineStat{Union{Tuple,Vector{Number}}}
+mutable struct PAClassifier{F} <: OnlineStat{Union{Tuple,Vector{Number}}}
     weight::Vector{Float64} # weights
-    rule::Function
+    rule::F
     n::Int
 end
 PAClassifier(in_::Int=1; type::Symbol=:base, C=1) = begin
@@ -39,14 +39,15 @@ OnlineStatsBase._fit!(o::PAClassifier, y::Tuple) = begin
         lt = max(0, 1 - y[2] * yh)
         τ = o.rule(lt, y[1])
         o.weight = o.weight + τ * y[2] * y[1]
+		return yh
     else
         return predict(o, y[1])
     end
 end
 
-mutable struct PARegressor <: OnlineStat{Union{Tuple,Vector{Number}}}
+mutable struct PARegressor{F} <: OnlineStat{Union{Tuple,Vector{Number}}}
     weight::Vector{Float64} # weights
-    rule::Function
+    rule::F
     ϵ::Float64
     n::Int
 end
@@ -64,6 +65,7 @@ OnlineStatsBase._fit!(o::PARegressor, y::Tuple) = begin
         τ = o.rule(lt, y[1])
         o.weight = o.weight + τ * sign(y[2] - yh) * y[1]
         o.n += 1
+		return yh
     else
         return predict(o, y[1])
     end
@@ -83,9 +85,9 @@ end
 """
 I think this is not working correctly.
 """
-mutable struct PAUniclassClassifier <: OnlineStat{AbstractVector{<:Number}}
+mutable struct PAUniclassClassifier{F} <: OnlineStat{AbstractVector{<:Number}}
     weight::Vector{Float64} # weights
-    rule::Function
+    rule::F
     ϵ::Float64
     adaptive::Bool
     B::Float64
@@ -123,6 +125,11 @@ OnlineStatsBase._fit!(o::PAUniclassClassifier, y::AbstractVector{<:Number}) = be
     end
     o.weight = w
     o.n += 1
+	if o.adaptive
+		return predict(o, y[1:end-1])
+	else
+		return predict(o, y)
+	end
 end
 
 end # module PassiveAgressive
