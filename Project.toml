@@ -1,7 +1,7 @@
 name = "PassiveAgressive"
 uuid = "21f1dd4c-a57b-49d8-81db-b4574b4a05e2"
 authors = ["hv10 <noeldanz@gmail.com>"]
-version = "0.1.0"
+version = "0.2.0"
 
 [deps]
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
