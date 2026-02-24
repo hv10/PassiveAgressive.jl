@@ -25,14 +25,14 @@ update_rule(tp::Symbol, C::Number) = begin
     throw(ArgumentError("Unsupported PAC Type"))
 end
 
-mutable struct PAClassifier{F} <: OnlineStat{Union{Tuple,Vector{Number}}}
-    weight::Vector{Float64} # weights
+mutable struct PAClassifier{T,F} <: OnlineStat{Union{Tuple,Vector{Number}}}
+    weight::Vector{T} # weights
     rule::F
-    C::Float64
+    C::T
     n::Int
 end
-PAClassifier(in_::Int=1; type::Symbol=:base, C=1) = begin
-    return PAClassifier(zeros(in_), type, C, 0)
+PAClassifier(in_::Int=1; type::Symbol=:base, C=1, T::Type=Float32) = begin
+    return PAClassifier(zeros(T, in_), type, T(C), 0)
 end
 predict(o::PAClassifier, y::AbstractArray) = sign(dot(o.weight, y))
 OnlineStatsBase._fit!(o::PAClassifier, y::Vector{Number}) = predict(o, y)
@@ -49,15 +49,15 @@ OnlineStatsBase._fit!(o::PAClassifier, y::Tuple) = begin
     end
 end
 
-mutable struct PARegressor{F} <: OnlineStat{Union{Tuple,Vector{Number}}}
-    weight::Vector{Float64} # weights
+mutable struct PARegressor{T,F} <: OnlineStat{Union{Tuple,Vector{Number}}}
+    weight::Vector{T} # weights
     rule::F
-    C::Float64
-    ϵ::Float64
+    C::T
+    ϵ::T
     n::Int
 end
-PARegressor(in_::Int=1; type::Symbol=:base, ϵ=0.1, C=1) = begin
-    return PARegressor(zeros(in_), type, C, ϵ, 0)
+PARegressor(in_::Int=1; type::Symbol=:base, ϵ=0.1, C=1, T::Type=Float32) = begin
+    return PARegressor(zeros(T, in_), type, T(C), T(ϵ), 0)
 end
 predict(o::PARegressor, y::AbstractArray) = dot(o.weight, y)
 OnlineStatsBase._fit!(o::PARegressor, y::Vector{Number}) = predict(o, y)
