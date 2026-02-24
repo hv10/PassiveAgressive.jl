@@ -102,15 +102,15 @@ mutable struct PAUniclassClassifier{T<:AbstractFloat,F} <: OnlineStat{AbstractVe
     B::T
     n::Int
 end
-PAUniclassClassifier(in_::Int=1; type::Symbol=:base, ϵ=0.1, B=1e10, C=1, adaptive=true) = begin
+PAUniclassClassifier(in_::Int=1; type::Symbol=:base, ϵ=0.1, B=1e10, C=1, adaptive::Bool=true, T::Type=Float32) = begin
     if adaptive
-        ϵ = 0.0 # init ϵ to be zero
-        weight = zeros(in_ + 1)
-        weight[end] = B
+        ϵ = zero(T) # init ϵ to be zero
+        weight = zeros(T, in_ + 1)
+        weight[end] = T(B)
     else
-        weight = zeros(in_)
+        weight = zeros(T, in_)
     end
-    return PAUniclassClassifier(weight, type, C, ϵ, adaptive, B, 0)
+    return PAUniclassClassifier(weight, type, T(C), T(ϵ), adaptive, T(B), 0)
 end
 predict(o::PAUniclassClassifier{T}, y::AbstractVector{T}) where T = o.adaptive ? dot(o.weight[1:end-1], y) : dot(o.weight, y)
 OnlineStatsBase._fit!(o::PAUniclassClassifier, y::AbstractVector{<:Number}) = begin
