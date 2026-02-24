@@ -93,13 +93,13 @@ end
 """
 I think this is not working correctly.
 """
-mutable struct PAUniclassClassifier{T,F} <: OnlineStat{AbstractVector{<:Number}}
+mutable struct PAUniclassClassifier{T,F<:AbstractFloat} <: OnlineStat{AbstractVector{<:Number}}
     weight::Vector{T} # weights
     rule::F
-    C::Float64
-    ϵ::Float64
+    C::T
+    ϵ::T
     adaptive::Bool
-    B::Float64
+    B::T
     n::Int
 end
 PAUniclassClassifier(in_::Int=1; type::Symbol=:base, ϵ=0.1, B=1e10, C=1, adaptive=true) = begin
