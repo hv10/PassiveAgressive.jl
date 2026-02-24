@@ -93,7 +93,7 @@ end
 """
 I think this is not working correctly.
 """
-mutable struct PAUniclassClassifier{T,F<:AbstractFloat} <: OnlineStat{AbstractVector{<:Number}}
+mutable struct PAUniclassClassifier{T<:AbstractFloat,F} <: OnlineStat{AbstractVector{<:Number}}
     weight::Vector{T} # weights
     rule::F
     C::T
