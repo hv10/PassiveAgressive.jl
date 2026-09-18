@@ -31,8 +31,9 @@ mutable struct PAClassifier{T,F} <: OnlineStat{Union{Tuple,Vector{Number}}}
     C::T
     n::Int
 end
-PAClassifier(in_::Int=1; type::Symbol=:base, C=1, T::Type{TT}=Float32) where {TT} = begin
-    return PAClassifier(zeros(TT, in_), type, TT(C), 0)
+PAClassifier(in_::Int=1; kwargs...) = PAClassifier(Float32, in_; kwargs...)
+PAClassifier(::Type{T}, in_::Int=1; type::Symbol=:base, C=1) where {T<:AbstractFloat} = begin
+    return PAClassifier(zeros(T, in_), type, T(C), 0)
 end
 predict(o::PAClassifier, y::AbstractArray) = sign(dot(o.weight, y))
 OnlineStatsBase._fit!(o::PAClassifier, y::Vector{Number}) = predict(o, y)
@@ -56,8 +57,9 @@ mutable struct PARegressor{T,F} <: OnlineStat{Union{Tuple,Vector{Number}}}
     ϵ::T
     n::Int
 end
-PARegressor(in_::Int=1; type::Symbol=:base, ϵ=0.1, C=1, T::Type{TT}=Float32) where {TT} = begin
-    return PARegressor(zeros(TT, in_), type, TT(C), TT(ϵ), 0)
+PARegressor(in_::Int=1; kwargs...) = PARegressor(Float32, in_; kwargs...)
+PARegressor(::Type{T}, in_::Int=1; type::Symbol=:base, ϵ=0.1, C=1) where {T<:AbstractFloat} = begin
+    return PARegressor(zeros(T, in_), type, T(C), T(ϵ), 0)
 end
 predict(o::PARegressor, y::AbstractArray) = dot(o.weight, y)
 OnlineStatsBase._fit!(o::PARegressor, y::Vector{Number}) = predict(o, y)
@@ -102,7 +104,8 @@ mutable struct PAUniclassClassifier{T<:AbstractFloat,F} <: OnlineStat{AbstractVe
     B::T
     n::Int
 end
-PAUniclassClassifier(in_::Int=1; type::Symbol=:base, ϵ=0.1, B=1e10, C=1, adaptive::Bool=true, TT::Type{T}=Float32) where {T} = begin
+PAUniclassClassifier(in_::Int=1; kwargs...) = PAUniclassClassifier(Float32, in_; kwargs...)
+PAUniclassClassifier(::Type{T}, in_::Int=1; type::Symbol=:base, ϵ=0.1, B=1e10, C=1, adaptive::Bool=true) where {T<:AbstractFloat} = begin
     if adaptive
         ϵ = zero(T) # init ϵ to be zero
         weight = zeros(T, in_ + 1)
